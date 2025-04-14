@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>img Editor</title>
+    <style>
+        * {font: 14pt;
+            margin: 1em;
+
+        }
+        button {
+            padding: 1em;
+            background-color: #333;
+            color: #ccc;
+            border-radius: 4px;
+            padding-left: 4em;
+            padding-right: 4em;
+
+        }
+
+        button:hover {
+            background-color: green;
+        }
+        canvas{
+            border: solid 1px black;
+            background-color: #ccc;
+        }
+
+    
+    </style>
+</head>
+<body>
+    <button id="saveBtn">Save</button>
+    <button id="loadBtn">Load</button>
+    <br>
+    <input type="text" id="filename" placeholder="file name">
+    <br>
+    <canvas id="imgCanvas" width ="500" height="500"></canvas>
+
+    <textarea name="" id="fileContent" placeholder="file content " cols="50" rows="20 "></textarea>
+    
+</body>
+
+<script>
+ const saveBtn = document.getElementById('saveBtn');
+const loadBtn = document.getElementById('loadBtn'); 
+const filenameInput = document.getElementById('filename');
+const fileContent = document.getElementById('fileContent');
+const canvas = document.getElementById('imgCanvas');
+const ctx = canvas.getContext('2d');
+
+loadBtn.addEventListener('click', () => {
+    const fileinput = document.createElement('input');
+    fileinput.type = 'file';
+    fileinput.accept = '.txt,.md';
+    fileinput.addEventListener('change', () => {
+        var fr = new FileReader();
+        fr.onload = function () {
+            fileContent.value = fr.result;
+        }
+        fr.readAsText(fileinput.files[0]);
+        filenameInput.value = fileinput.value
+            .split('\\').at(-1)
+            .split('/').at(-1);
+    });
+    fileinput.click();
+});
+
+saveBtn.addEventListener('click', () => {
+    const downloadlink = document.createElement('a');
+    downloadlink.href = canvas.toDataURL('image/png');
+    downloadlink.download = filenameInput.value || 'canvas.png';
+    downloadlink.click();
+});
+
+// Drawing
+let drawing = false;
+let brushSize = 10;
+
+canvas.addEventListener('mousedown', (e) => {
+    drawing = true;
+    brushSize = 20 + 20 * Math.random();
+    const red = Math.random() * 255;
+    const green = Math.random() * 255;
+    const blue = Math.random() * 255;
+    ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, 0.4)`;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+    if (drawing) {
+        ctx.beginPath();
+        ctx.arc(e.offsetX, e.offsetY, brushSize, 0, Math.PI * 2);
+        ctx.fill();
+    }
+});
+
+canvas.addEventListener('mouseup', () => {
+    drawing = false;
+});
+
+        
+</script>
+</html>

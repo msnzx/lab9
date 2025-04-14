@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Editor</title>
+    <style>
+      * {
+        font: 14pt sans-serif;
+        margin: 1em;
+      }
+      button {
+        padding: 1em;
+        background-color: #333;
+        color: #ccc;
+        border-radius: 4px;
+        padding-left: 4em;
+        padding-right: 4em;
+      }
+      button:hover {
+        background-color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="saveBtn">Save</button>
+    <button id="loadBtn">Load</button>
+    <br />
+    <input type="text" id="filename" placeholder="file name" />
+    <br />
+    <textarea
+      id="fileContent"
+      placeholder="file content"
+      cols="50"
+      rows="20"
+    ></textarea>
+
+    <script>
+      const saveBtn = document.getElementById("saveBtn");
+      const loadBtn = document.getElementById("loadBtn");
+      const filenameInput = document.getElementById("filename");
+      const fileContent = document.getElementById("fileContent");
+
+      loadBtn.addEventListener("click", () => {
+        const fileinput = document.createElement("input");
+        fileinput.type = "file";
+        fileinput.accept = ".txt,.md";
+        fileinput.addEventListener("change", () => {
+          const fr = new FileReader();
+          fr.onload = function () {
+            fileContent.value = fr.result;
+          };
+          fr.readAsText(fileinput.files[0]);
+          filenameInput.value = fileinput.files[0].name;
+        });
+        fileinput.click();
+      });
+
+      saveBtn.addEventListener("click", () => {
+        const blob = new Blob([fileContent.value], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filenameInput.value || "untitled.txt";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>
